@@ -1,0 +1,22 @@
+{\rtf1\ansi\ansicpg1250\cocoartf2867
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fnil\fcharset0 HelveticaNeue;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+{\*\expandedcolortbl;;\cssrgb\c0\c0\c0;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720\sa280\partightenfactor0
+
+\f0\fs28 \cf0 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 C4Context\
+\'a0\'a0\'a0 title Diagram kontener\'f3w (C4) - Cloud Task Manager\
+\'a0\'a0\'a0 Person(user, "U\uc0\u380 ytkownik", "Zarz\u261 dza swoimi zadaniami")\
+\'a0\'a0\'a0 Enterprise_Boundary(c1, "System Cloud Task Manager") \{\
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0 Container(web_app, "Frontend (React 19)", "Vite, HTTPS", "Interfejs u\uc0\u380 ytkownika")\
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0 Container(api, "Backend (API)", ".NET 9 / Node 24", "Logika biznesowa, REST API")\
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0 ContainerDb(db, "Baza danych (SQL)", "Azure SQL Serverless", "Przechowuje dane i zadania")\
+\'a0\'a0\'a0 \}\
+\'a0\'a0\'a0 Rel(user, web_app, "Korzysta z", "HTTPS")\
+\'a0\'a0\'a0 Rel(web_app, api, "Wysy\uc0\u322 a zapytania", "JSON/HTTPS")\
+\'a0\'a0\'a0 Rel(api, db, "Odczytuje/Zapisuje", "T-SQL / Port 1433")\
+\pard\pardeftab720\partightenfactor0
+\cf0 \'a0}

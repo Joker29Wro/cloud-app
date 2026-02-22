@@ -1,0 +1,14 @@
+# Node.js
+node_modules/
+.env
+
+# .NET
+bin/
+obj/
+
+# build / logs
+dist/
+logs/
+
+# macOS
+.DS_Store
