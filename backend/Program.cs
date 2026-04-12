@@ -1,8 +1,16 @@
 using CloudBackend.Data;
 using Microsoft.EntityFrameworkCore;
 using CloudBackend.Models;
+using Azure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
+
+if (builder.Environment.IsProduction())
+{
+    var vaultName = builder.Configuration["KeyVaultName"];
+    var keyVaultEndpoint = new Uri($"https://{vaultName}.vault.azure.net/");
+    builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, new DefaultAzureCredential());
+}
 
 // --- SEKCJA USŁUG (Dependency Injection) ---
 
@@ -13,17 +21,19 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// 3. PobranieConnection Stringa(zmiennejśrodowiskowejz Dockera)
-// Najpierwszukajw zmiennychśrodowiskowych(Docker),
-// a jeśli tam nie ma (lokalnyterminal), weźz appsettings.json
-var connectionString= Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
-?? builder.Configuration.GetConnectionString("DefaultConnection");
+// 3. Pobranie connection stringa
+var connectionString = builder.Configuration["DbConnectionString"]
+                      ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
 
-// 4. Rejestracja bazy danych MS SQL Server
+// Rejestracja bazy danych z mechanizmem ponawiania prób (Retry Logic)
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(connectionString)
-);
+    options.UseSqlServer(connectionString,
+        sqlOptions => sqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(30),
+            errorNumbersToAdd: null)
+    ));
 
 // 5. Konfiguracja CORS - pozwala Reactowi(port 8080) na dostęp do API
 builder.Services.AddCors(options =>
@@ -54,8 +64,8 @@ using (var scope = app.Services.CreateScope())
         if (!context.Tasks.Any())
         {
             context.Tasks.AddRange(
-                new CloudTask { Name = "Zrobić kawę",IsCompleted = true },
-                new CloudTask { Name = "Uruchomić projekt w Dockerze",IsCompleted = false }
+                new CloudTask { Name = "Zrobić kawę", IsCompleted = true },
+                new CloudTask { Name = "Uruchomić projekt w Dockerze", IsCompleted = false }
             );
 
             context.SaveChanges();
